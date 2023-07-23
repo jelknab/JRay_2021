@@ -11,6 +11,8 @@ namespace JRay_2021.primitives
         public Ray Ray { get; set; }
         
         public float Distance { get; set; }
+        
+        public Pixel ResultingColor { get; set; }
 
         private Vector3? _position;
         public Vector3 Position

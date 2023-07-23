@@ -17,7 +17,7 @@ namespace JRay_2021.renderObjects
             
             if (!solveQuadratic(a, b, c, out t0, out t1)) return 0;
 
-            if (t0 > t1) Swap(ref t0, ref t1);
+            if (t0 > t1) (t0, t1) = (t1, t0);
 
             if (t0 < 0)
             {
@@ -27,13 +27,7 @@ namespace JRay_2021.renderObjects
 
             return (float) t0;
         }
-        
-        private static void Swap(ref double foo, ref double bar) {
-            var tmp = foo;
-            foo = bar;
-            bar = tmp;
-        }
-        
+
         private bool solveQuadratic(double a, double b, double c, out double x0, out double x1) 
         { 
             double discr = b * b - 4 * a * c;
@@ -58,7 +52,7 @@ namespace JRay_2021.renderObjects
 
         public override Vector3 HitNormal(Intersection intersection)
         {
-            return base.HitNormal(intersection);
+            return Vector3.Normalize(intersection.Position - Center);
         }
     }
 }

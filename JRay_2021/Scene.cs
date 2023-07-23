@@ -18,7 +18,7 @@ namespace JRay_2021
             {
                 var primaryRay = Camera.RasterToPrimaryRay(image, x, y);
 
-                var closestIntersection = Intersect(primaryRay);
+                var closestIntersection = FindClosestIntersection(primaryRay);
 
                 if (closestIntersection != null)
                 {
@@ -33,7 +33,7 @@ namespace JRay_2021
             }
         }
 
-        public Intersection Intersect(Ray ray)
+        public Intersection FindClosestIntersection(Ray ray)
         {
             var t = float.MaxValue;
             IRenderObject closestObject = null;

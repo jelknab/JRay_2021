@@ -41,7 +41,7 @@ namespace Raytracer_Tests
         [Fact]
         public void ReflectionTest()
         {
-            var image = new Image(100, 100);
+            var image = new Image(100, 100, 1);
             var scene = new Scene
             {
                 Camera = new Camera(0, 0, 0)

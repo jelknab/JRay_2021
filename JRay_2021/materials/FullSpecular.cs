@@ -17,7 +17,7 @@ namespace JRay_2021.materials
                 Origin = intersection.Position + intersection.HitNormal * 0.01f,
                 Direction = reflect
             };
-            var reflectedIntersection = Scene.Intersect(reflectedRay);
+            var reflectedIntersection = Scene.FindClosestIntersection(reflectedRay);
 
             return reflectedIntersection?.RenderObject.Material.Render(reflectedIntersection) ?? Color.Black;
         }

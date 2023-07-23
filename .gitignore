@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.idea/.idea.JRay_2021/.idea
+/.vs
+/JRay_2021/bin/Debug
+/JRay_2021/obj
+/Raytracer_Tests/obj
+/Raytracer_Tests/bin/Debug
+/JRay_2021.sln.DotSettings.user
