@@ -13,12 +13,15 @@ public class Scene1: Scene
     {
         var sphereRed = new Sphere
         {
-            Center = new Vector3(-4, 0, -10),
+            Center = new Vector3(0, -2, -10),
             Radius = 2,
-            Material = new HitNormalMaterial()
+            Material = new BrdfMaterial
+            {
+                Scene = this
+            }
         };
 
-        var sphereBlue = new Sphere
+        var rightSphere = new Sphere
         {
             Center = new Vector3(4, 0, -10),
             Radius = .5f,
@@ -33,7 +36,6 @@ public class Scene1: Scene
             {
                 Scene = this
             }
-            // Material = new FullBright {Color = Color.FromArgb(0, 255, 0)}
         };
 
         var floorPlane = new Plane
@@ -60,7 +62,7 @@ public class Scene1: Scene
         this.RenderObjects = new List<IRenderObject>()
         {
             sphereRed,
-            sphereBlue,
+            rightSphere,
             encapsulatingSphere,
             floorPlane,
             leftPlane,

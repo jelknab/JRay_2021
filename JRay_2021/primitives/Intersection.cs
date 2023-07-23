@@ -6,13 +6,11 @@ namespace JRay_2021.primitives
 {
     public class Intersection : IComparable
     {
-        public IRenderObject RenderObject { get; set; }
+        public required IRenderObject RenderObject { get; set; }
         
-        public Ray Ray { get; set; }
+        public required Ray Ray { get; set; }
         
         public float Distance { get; set; }
-        
-        public Pixel ResultingColor { get; set; }
 
         private Vector3? _position;
         public Vector3 Position

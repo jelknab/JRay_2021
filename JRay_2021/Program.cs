@@ -15,7 +15,7 @@ var scene = new Scene1
     }
 };
 
-scene.Render(image);
+await scene.Render(image);
 
 var pictureDirectory = Path.Combine(
     Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),

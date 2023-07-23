@@ -9,7 +9,7 @@ namespace JRay_2021
 {
     public class Image
     {
-        public Pixel[,] PixelGrid { get; }
+        public SampledColor[,] PixelGrid { get; }
 
         public double AspectRatio { get; }
 
@@ -21,12 +21,12 @@ namespace JRay_2021
 
         public Image(int width, int height, float exposure)
         {
-            PixelGrid = new Pixel[height, width];
+            PixelGrid = new SampledColor[height, width];
             AspectRatio = (double)width / height;
             Exposure = exposure;
         }
 
-        public IEnumerable<(int x, int y, Pixel pixel)> PixelEnumerator()
+        public IEnumerable<(int x, int y, SampledColor pixel)> PixelEnumerator()
         {
             for (var y = 0; y < Height; y++)
                 for (var x = 0; x < Width; x++)
@@ -51,7 +51,7 @@ namespace JRay_2021
             }
 
             using var image = surface.Snapshot();
-            using var data = image.Encode(format, 80);
+            using var data = image.Encode(format, 95);
             using var stream = File.OpenWrite($"{destination}.{format}");
             data.SaveTo(stream);
         }

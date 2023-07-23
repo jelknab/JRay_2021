@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
+using System.Threading.Tasks;
 using JRay_2021;
 using JRay_2021.materials;
 using JRay_2021.primitives;
@@ -38,8 +39,9 @@ namespace Raytracer_Tests
             Assert.Equal(0, sphere.Intersect(missingRay));
         }
 
+
         [Fact]
-        public void ReflectionTest()
+        public async Task BRDFReflectionTest()
         {
             var image = new Image(100, 100, 1);
             var scene = new Scene
@@ -52,7 +54,7 @@ namespace Raytracer_Tests
                 }
             };
 
-            var reflectiveSphere = new Sphere
+            var sphere1 = new Sphere
             {
                 Center = new Vector3(0, 0, -10),
                 Radius = 2,
@@ -62,20 +64,20 @@ namespace Raytracer_Tests
                 }
             };
 
-            var hollowSphere = new SphereHollow
+            var sphere2 = new SphereHollow
             {
-                Center = Vector3.Zero,
-                Radius = 20,
+                Center = sphere1.Center,
+                Radius = 50,
                 Material = new FullBright{Color = Color.FromArgb(255, 0, 0)}
             };
 
             scene.RenderObjects = new List<IRenderObject>()
             {
-                reflectiveSphere,
-                hollowSphere
+                sphere1,
+                sphere2
             };
 
-            scene.Render(image);
+            await scene.Render(image);
 
             foreach (var (x, y, pixel) in image.PixelEnumerator())
             {
