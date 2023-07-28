@@ -1,10 +1,10 @@
-﻿using System;
+﻿using JRay_2021;
+using JRay_2021.testScenes;
+using System;
 using System.IO;
 using System.Numerics;
-using JRay_2021;
-using JRay_2021.testScenes;
 
-var image = new Image(1024, 1024, 1);
+var image = new Image(128, 128, 1);
 var scene = new Scene1
 {
     Camera = new Camera(20, 0, 0)
@@ -15,7 +15,9 @@ var scene = new Scene1
     }
 };
 
-await scene.Render(image);
+var performance = await PerformanceTesting.TestPerformanceAsync(10, () => scene.Render(image));
+
+Console.WriteLine($"Render finished, avg execution time {performance.AverageRunningTimeMS} ms");
 
 var pictureDirectory = Path.Combine(
     Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
