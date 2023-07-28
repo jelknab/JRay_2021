@@ -1,6 +1,6 @@
+using JRay_2021.primitives;
 using System;
 using System.Numerics;
-using JRay_2021.primitives;
 
 namespace JRay_2021
 {
@@ -18,7 +18,7 @@ namespace JRay_2021
             set
             {
                 _fieldOfView = value;
-                Scale = (float) Math.Tan(DegreeToRadian(FieldOfView * 0.5));
+                Scale = (float)Math.Tan(DegreeToRadian(FieldOfView * 0.5));
             }
         }
 
@@ -37,7 +37,7 @@ namespace JRay_2021
 
         private float DegreeToRadian(double degree)
         {
-            return (float) (Math.PI / 180 * degree);
+            return (float)(Math.PI / 180 * degree);
         }
 
         public Ray RasterToPrimaryRay(Image image, int x, int y)
@@ -51,8 +51,8 @@ namespace JRay_2021
                 Direction = Vector3.Normalize(
                     CameraToWorld.MultDirMatrix(
                         new Vector3(
-                            (float) primaryX,
-                            (float) primaryY,
+                            (float)primaryX,
+                            (float)primaryY,
                             -1
                         )
                     )

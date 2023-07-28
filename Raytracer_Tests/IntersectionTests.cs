@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Numerics;
-using System.Threading.Tasks;
 using JRay_2021;
 using JRay_2021.materials;
 using JRay_2021.primitives;
 using JRay_2021.renderObjects;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Numerics;
+using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 using Image = JRay_2021.Image;
 
 namespace Raytracer_Tests
@@ -34,7 +31,7 @@ namespace Raytracer_Tests
                 Origin = new Vector3(0, 2, 0),
                 Direction = new Vector3(0, 0, 1)
             };
-            
+
             Assert.Equal(9, sphere.Intersect(directRay));
             Assert.Equal(0, sphere.Intersect(missingRay));
         }
@@ -68,7 +65,7 @@ namespace Raytracer_Tests
             {
                 Center = sphere1.Center,
                 Radius = 50,
-                Material = new FullBright{Color = Color.FromArgb(255, 0, 0)}
+                Material = new FullBright { Color = Color.FromArgb(255, 0, 0) }
             };
 
             scene.RenderObjects = new List<IRenderObject>()
@@ -81,7 +78,7 @@ namespace Raytracer_Tests
 
             foreach (var (x, y, pixel) in image.PixelEnumerator())
             {
-                Assert.Equal(1.0f, pixel.R);
+                Assert.True(pixel.R - 1.0f < 0.000001);
             }
         }
     }

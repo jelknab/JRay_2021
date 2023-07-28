@@ -14,7 +14,7 @@ namespace JRay_2021.primitives
                 Z = (src.X * mat.M13 + src.Y * mat.M23 + src.Z * mat.M33 + mat.M43) / w
             };
         }
-        
+
         public static Vector3 MultDirMatrix(this Matrix4x4 mat, Vector3 src)
         {
             return new Vector3

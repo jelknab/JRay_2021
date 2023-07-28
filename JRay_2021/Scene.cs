@@ -1,9 +1,8 @@
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
 using JRay_2021.primitives;
 using JRay_2021.renderObjects;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace JRay_2021
 {
@@ -69,18 +68,19 @@ namespace JRay_2021
         {
             var t = float.MaxValue;
             IRenderObject? closestObject = null;
-            
+
             foreach (var renderObject in RenderObjects)
             {
                 var intersectT = renderObject.Intersect(ray);
 
                 if (intersectT == 0 || !(intersectT < t)) continue;
-                
+
                 t = intersectT;
                 closestObject = renderObject;
             }
 
-            if (closestObject is null) {
+            if (closestObject is null)
+            {
                 return null;
             }
 

@@ -1,16 +1,16 @@
+using JRay_2021.renderObjects;
 using System;
 using System.Numerics;
-using JRay_2021.renderObjects;
 
 namespace JRay_2021.primitives
 {
     public class Intersection : IComparable
     {
         public required IRenderObject RenderObject { get; set; }
-        
+
         public required Ray Ray { get; set; }
-        
-        public float Distance { get; set; }
+
+        public required float Distance { get; set; }
 
         private Vector3? _position;
         public Vector3 Position
@@ -34,7 +34,7 @@ namespace JRay_2021.primitives
 
         public int CompareTo(object obj)
         {
-            return obj == null ? 1 : Distance.CompareTo(((Intersection) obj).Distance);
+            return obj == null ? 1 : Distance.CompareTo(((Intersection)obj).Distance);
         }
     }
 }

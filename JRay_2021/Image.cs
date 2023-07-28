@@ -1,9 +1,7 @@
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using JRay_2021.primitives;
 using SkiaSharp;
+using System.Collections.Generic;
+using System.IO;
 
 namespace JRay_2021
 {

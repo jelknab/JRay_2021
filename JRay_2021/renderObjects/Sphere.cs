@@ -1,7 +1,6 @@
-using System;
-using System.Numerics;
 using JRay_2021.materials;
 using JRay_2021.primitives;
+using System.Numerics;
 
 namespace JRay_2021.renderObjects
 {
@@ -30,19 +29,19 @@ namespace JRay_2021.renderObjects
             var tca = Vector3.Dot(l, ray.Direction);
 
             if (tca < 0) return 0;
-            
-            var d2 = Vector3.Dot(l, l) - tca * tca; 
-            
+
+            var d2 = Vector3.Dot(l, l) - tca * tca;
+
             if (d2 > Radius2) return 0;
-            
-            var thc = Math.Sqrt(Radius2 - d2); 
-            
+
+            var thc = FastNumerics.Sqrt(Radius2 - d2);
+
             var t0 = tca - thc;
-            
+
             // If t is negative, ray started inside sphere so clamp t to zero 
             if (t0 < 0.0f) return 0;
 
-            return (float) t0;
+            return (float)t0;
         }
 
         public virtual Vector3 HitNormal(Intersection intersection)

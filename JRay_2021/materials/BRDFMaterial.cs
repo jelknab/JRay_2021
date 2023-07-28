@@ -1,18 +1,17 @@
+using JRay_2021.primitives;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Numerics;
-using System.Reflection;
-using JRay_2021.primitives;
 
 namespace JRay_2021.materials
 {
     public class BrdfMaterial : IMaterial
     {
-        public Scene Scene { get; set; }
+        public required Scene Scene { get; set; }
 
-        private readonly int _sampleCount = 32;
-        
+        private readonly int _sampleCount = 10;
+        private static readonly Random _random = new();
+
         public void Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
         {
             var incidentDirection = Vector3.Reflect(intersection.Ray.Direction, intersection.HitNormal);
@@ -22,7 +21,8 @@ namespace JRay_2021.materials
                 return;
             }
 
-            for (int i = 0; i < _sampleCount; i++) {
+            for (int i = 0; i < _sampleCount; i++)
+            {
                 var reflectedRay = new Ray
                 {
                     Origin = intersection.Position + intersection.HitNormal,
@@ -31,7 +31,7 @@ namespace JRay_2021.materials
 
                 sampleStack.Push(new Sample
                 {
-                    Effect = sample.Effect / (float) _sampleCount,
+                    Effect = sample.Effect / (float)_sampleCount,
                     Ray = reflectedRay,
                     Parent = sample,
                 });
@@ -40,26 +40,16 @@ namespace JRay_2021.materials
 
         public static Vector3 CalculateDiffuseReflectionDirection(Vector3 surfaceNormal, Vector3 incidentDirection)
         {
-            Vector3 randomDirection = GenerateRandomDirectionInHemisphere(surfaceNormal);
-            Vector3 reflectionDirection = incidentDirection - 2 * Vector3.Dot(incidentDirection, surfaceNormal) * surfaceNormal;
-            Vector3 diffuseDirection = reflectionDirection + randomDirection;
+            float u = (float)_random.NextDouble();
+            float v = (float)_random.NextDouble();
+            float theta = 2f * MathF.PI * u;
+            float phi = MathF.Acos(2 * v - 1);
 
-            return Vector3.Normalize(diffuseDirection);
-        }
+            float x = MathF.Sin(phi) * MathF.Cos(theta);
+            float y = MathF.Sin(phi) * MathF.Sin(theta);
+            float z = MathF.Cos(phi);
 
-        public static Vector3 GenerateRandomDirectionInHemisphere(Vector3 surfaceNormal)
-        {
-            Random random = new Random();
-            float u = (float)random.NextDouble();
-            float v = (float)random.NextDouble();
-            float theta = 2f * (float)Math.PI * u;
-            float phi = (float)Math.Acos(2 * v - 1);
-
-            float x = (float)(Math.Sin(phi) * Math.Cos(theta));
-            float y = (float)(Math.Sin(phi) * Math.Sin(theta));
-            float z = (float)Math.Cos(phi);
-
-            Vector3 randomDirection = new Vector3(x, y, z);
+            Vector3 randomDirection = new(x, y, z);
 
             // Ensure the random direction is in the hemisphere defined by the surface normal
             if (Vector3.Dot(randomDirection, surfaceNormal) < 0)
@@ -67,7 +57,10 @@ namespace JRay_2021.materials
                 randomDirection = -randomDirection;
             }
 
-            return randomDirection;
+            Vector3 reflectionDirection = incidentDirection - 2 * Vector3.Dot(incidentDirection, surfaceNormal) * surfaceNormal;
+            Vector3 diffuseDirection = reflectionDirection + randomDirection;
+
+            return Vector3.Normalize(diffuseDirection);
         }
     }
 }

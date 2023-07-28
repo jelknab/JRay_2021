@@ -1,13 +1,13 @@
-using System.Numerics;
 using JRay_2021.materials;
 using JRay_2021.primitives;
+using System.Numerics;
 
 namespace JRay_2021.renderObjects
 {
     public class Plane : IRenderObject
     {
         private Vector3 _normal;
-        
+
         public Vector3 Position { get; set; }
 
         public Vector3 Normal
@@ -17,7 +17,7 @@ namespace JRay_2021.renderObjects
         }
 
         public IMaterial Material { get; set; }
-        
+
         public float Intersect(Ray ray)
         {
             var denominator = Vector3.Dot(Normal, ray.Direction);

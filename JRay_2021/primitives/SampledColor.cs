@@ -2,10 +2,10 @@ using System.Drawing;
 
 namespace JRay_2021.primitives
 {
-    public class SampledColor
+    public struct SampledColor
     {
         public static readonly SampledColor Black = new SampledColor();
-        
+
         public SampledColor(Color color)
         {
             R = color.R / 255.0f;
@@ -15,7 +15,7 @@ namespace JRay_2021.primitives
 
         public SampledColor()
         {
-            
+
         }
 
         public float R { get; set; } = 0;
