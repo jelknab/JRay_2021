@@ -19,7 +19,8 @@ namespace Raytracer_Tests
             var sphere = new Sphere
             {
                 Center = new Vector3(0, 0, 10),
-                Radius = 1
+                Radius = 1,
+                Material = new HitNormalMaterial()
             };
             var directRay = new Ray
             {

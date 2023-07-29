@@ -1,11 +1,7 @@
-﻿using JRay_2021.primitives;
-
-namespace JRay_2021
+﻿namespace JRay_2021.primitives
 {
-    public class Sample
+    public class Sample: Ray
     {
-        public required Ray Ray { get; set; }
-
         public SampledColor SampledColor { get; set; } = SampledColor.Black;
 
         public required float Effect { get; set; }

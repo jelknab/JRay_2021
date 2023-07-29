@@ -12,9 +12,11 @@ namespace JRay_2021
 
         public List<IRenderObject> RenderObjects { get; set; } = new List<IRenderObject>();
 
+        public int _samplesPerPixel = 4;
+
         public async Task Render(Image image)
         {
-            foreach (var block in image.PixelEnumerator().Batch(16))
+            foreach (var block in image.PixelEnumerator().Batch(32))
             {
                 var tasks = block.Select(pixel => Task.Run(() => RenderPixel(image, pixel.x, pixel.y)));
                 await Task.WhenAll(tasks);
@@ -23,59 +25,68 @@ namespace JRay_2021
 
         public void RenderPixel(Image image, int x, int y)
         {
-            var primaryRay = Camera.RasterToPrimaryRay(image, x, y);
-            var sampleStack = new Stack<Sample>();
-
-            var initialSample = new Sample
+            for (int sample = 0; sample < _samplesPerPixel; sample++)
             {
-                Effect = 1f,
-                Ray = primaryRay,
-                Parent = null,
-                SampledColor = SampledColor.Black
-            };
+                var primaryRay = Camera.RasterToPrimaryRay(image, x, y, sample, _samplesPerPixel);
+                var sampleStack = new Stack<Sample>();
 
-            sampleStack.Push(initialSample);
-
-            do
-            {
-                var lastItem = sampleStack.Pop();
-                var closestIntersection = FindClosestIntersection(lastItem.Ray);
-
-                if (closestIntersection is null)
+                var initialSample = new Sample
                 {
-                    continue;
-                }
-
-                closestIntersection.RenderObject.Material.Render(closestIntersection, sampleStack, lastItem);
-
-                if (lastItem == initialSample)
-                {
-                    continue;
-                }
-
-                initialSample.SampledColor = new SampledColor
-                {
-                    R = initialSample.SampledColor.R + lastItem.SampledColor.R * lastItem.Effect,
-                    G = initialSample.SampledColor.G + lastItem.SampledColor.G * lastItem.Effect,
-                    B = initialSample.SampledColor.B + lastItem.SampledColor.B * lastItem.Effect,
+                    Effect = 1f,
+                    Parent = null,
+                    Origin = primaryRay.Origin,
+                    Direction = primaryRay.Direction,
+                    SampledColor = SampledColor.Black
                 };
-            } while (sampleStack.Count > 0);
 
-            image.PixelGrid[y, x] = initialSample.SampledColor;
+                sampleStack.Push(initialSample);
+
+                do
+                {
+                    var lastItem = sampleStack.Pop();
+                    var closestIntersection = FindClosestIntersection(lastItem);
+
+                    if (closestIntersection is null)
+                    {
+                        continue;
+                    }
+
+                    closestIntersection.RenderObject.Material.Render(closestIntersection, sampleStack, lastItem);
+
+                    if (lastItem == initialSample)
+                    {
+                        continue;
+                    }
+
+                    initialSample.SampledColor = new SampledColor
+                    {
+                        R = initialSample.SampledColor.R + lastItem.SampledColor.R * lastItem.Effect,
+                        G = initialSample.SampledColor.G + lastItem.SampledColor.G * lastItem.Effect,
+                        B = initialSample.SampledColor.B + lastItem.SampledColor.B * lastItem.Effect,
+                    };
+                } while (sampleStack.Count > 0);
+
+                image.PixelGrid[y, x] = new SampledColor
+                {
+                    R = (image.PixelGrid[y, x]?.R ?? 0) + initialSample.SampledColor.R / (float) _samplesPerPixel,
+                    G = (image.PixelGrid[y, x]?.G ?? 0) + initialSample.SampledColor.G / (float) _samplesPerPixel,
+                    B = (image.PixelGrid[y, x]?.B ?? 0) + initialSample.SampledColor.B / (float) _samplesPerPixel
+                };
+            }
         }
 
         public Intersection? FindClosestIntersection(Ray ray)
         {
-            var t = float.MaxValue;
+            var maxDistance = float.MaxValue;
             IRenderObject? closestObject = null;
 
             foreach (var renderObject in RenderObjects)
             {
                 var intersectT = renderObject.Intersect(ray);
 
-                if (intersectT == 0 || !(intersectT < t)) continue;
+                if (intersectT == 0 || !(intersectT < maxDistance)) continue;
 
-                t = intersectT;
+                maxDistance = intersectT;
                 closestObject = renderObject;
             }
 
@@ -86,7 +97,7 @@ namespace JRay_2021
 
             return new Intersection
             {
-                Distance = t,
+                Distance = maxDistance - 0.00001f, //minus a small value to get it off the surface.
                 Ray = ray,
                 RenderObject = closestObject
             };

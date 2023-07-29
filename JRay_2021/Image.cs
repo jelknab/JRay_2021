@@ -9,7 +9,7 @@ namespace JRay_2021
     {
         public SampledColor[,] PixelGrid { get; }
 
-        public double AspectRatio { get; }
+        public float AspectRatio { get; }
 
         public double Exposure { get; set; }
 
@@ -20,7 +20,7 @@ namespace JRay_2021
         public Image(int width, int height, float exposure)
         {
             PixelGrid = new SampledColor[height, width];
-            AspectRatio = (double)width / height;
+            AspectRatio = (float)width / height;
             Exposure = exposure;
         }
 

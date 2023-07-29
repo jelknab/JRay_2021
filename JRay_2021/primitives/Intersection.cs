@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace JRay_2021.primitives
 {
-    public class Intersection : IComparable
+    public class Intersection
     {
         public required IRenderObject RenderObject { get; set; }
 
@@ -30,11 +30,6 @@ namespace JRay_2021.primitives
                 _hitNormal ??= RenderObject.HitNormal(this);
                 return _hitNormal.Value;
             }
-        }
-
-        public int CompareTo(object obj)
-        {
-            return obj == null ? 1 : Distance.CompareTo(((Intersection)obj).Distance);
         }
     }
 }

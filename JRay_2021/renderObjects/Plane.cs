@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace JRay_2021.renderObjects
 {
-    public class Plane : IRenderObject
+    public class Plane: IRenderObject
     {
         private Vector3 _normal;
 
@@ -16,7 +16,7 @@ namespace JRay_2021.renderObjects
             set => _normal = Vector3.Normalize(value);
         }
 
-        public IMaterial Material { get; set; }
+        public required IMaterial Material { get; set; }
 
         public float Intersect(Ray ray)
         {

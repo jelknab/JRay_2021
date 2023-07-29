@@ -7,14 +7,12 @@ namespace JRay_2021.renderObjects
     {
         public override float Intersect(Ray ray) // https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
         {
-            float t0, t1 = 0;
-
             var l = ray.Origin - Center;
             var a = Vector3.Dot(ray.Direction, ray.Direction);
             var b = 2 * Vector3.Dot(ray.Direction, l);
             var c = Vector3.Dot(l, l) - Radius2;
 
-            if (!solveQuadratic(a, b, c, out t0, out t1)) return 0;
+            if (!solveQuadratic(a, b, c, out float t0, out float t1)) return 0;
 
             if (t0 > t1) (t0, t1) = (t1, t0);
 
@@ -35,15 +33,16 @@ namespace JRay_2021.renderObjects
 
             if (discr < 0) return false;
 
-            else if (discr == 0)
+            if (discr == 0)
             {
                 x0 = x1 = -0.5f * b / a;
             }
             else
             {
+                float sqrt = FastNumerics.Sqrt(discr);
                 float q = (b > 0) ?
-                    -0.5f * (b + FastNumerics.Sqrt(discr)) :
-                    -0.5f * (b - FastNumerics.Sqrt(discr));
+                    -0.5f * (b + sqrt) :
+                    -0.5f * (b - sqrt);
                 x0 = q / a;
                 x1 = c / q;
             }

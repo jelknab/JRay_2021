@@ -39,7 +39,7 @@ namespace JRay_2021.renderObjects
             var t0 = tca - thc;
 
             // If t is negative, ray started inside sphere so clamp t to zero 
-            if (t0 < 0.0f) return 0;
+            if (t0 < 0.001f) return 0;
 
             return (float)t0;
         }

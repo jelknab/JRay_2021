@@ -26,6 +26,8 @@ namespace JRay_2021
 
         public Matrix4x4 CameraToWorld { get; }
 
+        public readonly Random _random = new();
+
         public Camera(float pitch, float yaw, float roll)
         {
             CameraToWorld = Matrix4x4.CreateFromYawPitchRoll(
@@ -40,10 +42,14 @@ namespace JRay_2021
             return (float)(Math.PI / 180 * degree);
         }
 
-        public Ray RasterToPrimaryRay(Image image, int x, int y)
+        public Ray RasterToPrimaryRay(Image image, int x, int y, int sample, int _samplesPerPixel)
         {
-            var primaryX = (2 * (x + 0.5) / image.Width - 1) * image.AspectRatio * Scale;
-            var primaryY = (1 - 2 * (y + 0.5) / image.Height) * Scale;
+            var s = 1.0f / _samplesPerPixel;
+            var randomX = -0.5f + s * sample - s * (float) _random.NextDouble();
+            var randomY = -0.5f + s * sample - s * (float) _random.NextDouble();
+
+            var primaryX = (2f * (x + 0.5f + randomX) / image.Width - 1f) * image.AspectRatio * Scale;
+            var primaryY = (1f - 2f * (y + 0.5f + randomY) / image.Height) * Scale;
 
             return new Ray
             {
@@ -51,8 +57,8 @@ namespace JRay_2021
                 Direction = Vector3.Normalize(
                     CameraToWorld.MultDirMatrix(
                         new Vector3(
-                            (float)primaryX,
-                            (float)primaryY,
+                            primaryX,
+                            primaryY,
                             -1
                         )
                     )

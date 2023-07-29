@@ -2,6 +2,7 @@ using JRay_2021.primitives;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace JRay_2021.materials
 {
@@ -9,45 +10,46 @@ namespace JRay_2021.materials
     {
         public required Scene Scene { get; set; }
 
-        private readonly int _sampleCount = 10;
+        private readonly int _sampleCount = 16;
         private static readonly Random _random = new();
 
         public void Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
         {
             var incidentDirection = Vector3.Reflect(intersection.Ray.Direction, intersection.HitNormal);
 
-            if (sample.Effect < 0.005)
+            if (sample.Effect < 0.001)
             {
                 return;
             }
 
+            var effect = sample.Effect / _sampleCount;
+
             for (int i = 0; i < _sampleCount; i++)
             {
-                var reflectedRay = new Ray
-                {
-                    Origin = intersection.Position + intersection.HitNormal,
-                    Direction = CalculateDiffuseReflectionDirection(incidentDirection, intersection.HitNormal)
-                };
-
                 sampleStack.Push(new Sample
                 {
-                    Effect = sample.Effect / (float)_sampleCount,
-                    Ray = reflectedRay,
+                    Effect = effect,
                     Parent = sample,
+                    Origin = intersection.Position,
+                    Direction = CalculateDiffuseReflectionDirection(incidentDirection, intersection.HitNormal)
                 });
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 CalculateDiffuseReflectionDirection(Vector3 surfaceNormal, Vector3 incidentDirection)
         {
-            float u = (float)_random.NextDouble();
+            float u = 2f * (float)_random.NextDouble() - 1f; // Generate a random float between -1 and 1
             float v = (float)_random.NextDouble();
-            float theta = 2f * MathF.PI * u;
-            float phi = MathF.Acos(2 * v - 1);
+            float phi = MathF.Acos(u);
 
-            float x = MathF.Sin(phi) * MathF.Cos(theta);
-            float y = MathF.Sin(phi) * MathF.Sin(theta);
-            float z = MathF.Cos(phi);
+            float sinPhi = MathF.Sin(phi);
+            float theta = 2f * MathF.PI * v;
+            var (sinTheta, cosTheta) = MathF.SinCos(theta);
+
+            float x = sinPhi * cosTheta;
+            float y = sinPhi * sinTheta;
+            float z = u;
 
             Vector3 randomDirection = new(x, y, z);
 

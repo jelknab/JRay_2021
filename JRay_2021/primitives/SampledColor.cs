@@ -2,7 +2,7 @@ using System.Drawing;
 
 namespace JRay_2021.primitives
 {
-    public struct SampledColor
+    public class SampledColor
     {
         public static readonly SampledColor Black = new SampledColor();
 
