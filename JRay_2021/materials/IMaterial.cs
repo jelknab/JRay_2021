@@ -5,6 +5,6 @@ namespace JRay_2021.materials
 {
     public interface IMaterial
     {
-        public void Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample);
+        public SampledColor Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample);
     }
 }

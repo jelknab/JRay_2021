@@ -18,8 +18,9 @@ namespace JRay_2021.materials
         public required List<MixedMaterialMaterial> Materials { get; set; }
 
 
-        public void Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
+        public SampledColor Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
         {
+            var result = new SampledColor();
 
             foreach (var material in Materials)
             {
@@ -27,19 +28,17 @@ namespace JRay_2021.materials
                 {
                     Effect = sample.Effect * material.Effect,
                     Direction = sample.Direction,
-                    Origin = sample.Origin,
-                    Parent = sample.Parent
+                    Origin = sample.Origin
                 };
 
-                material.Material.Render(intersection, sampleStack, childSample);
+                var sampled = material.Material.Render(intersection, sampleStack, childSample);
 
-                sample.SampledColor = new SampledColor
-                {
-                    R = sample.SampledColor.R + childSample.SampledColor.R * material.Effect,
-                    G = sample.SampledColor.G + childSample.SampledColor.G * material.Effect,
-                    B = sample.SampledColor.B + childSample.SampledColor.B * material.Effect
-                };
+                result.R += sampled.R * childSample.Effect;
+                result.G += sampled.G * childSample.Effect;
+                result.B += sampled.B * childSample.Effect;
             }
+
+            return result;
         }
     }
 }

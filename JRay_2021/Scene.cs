@@ -16,7 +16,7 @@ namespace JRay_2021
 
         public async Task Render(Image image)
         {
-            foreach (var block in image.PixelEnumerator().Batch(32))
+            foreach (var block in image.PixelEnumerator().Batch(128))
             {
                 var tasks = block.Select(pixel => Task.Run(() => RenderPixel(image, pixel.x, pixel.y)));
                 await Task.WhenAll(tasks);
@@ -33,13 +33,13 @@ namespace JRay_2021
                 var initialSample = new Sample
                 {
                     Effect = 1f,
-                    Parent = null,
                     Origin = primaryRay.Origin,
-                    Direction = primaryRay.Direction,
-                    SampledColor = SampledColor.Black
+                    Direction = primaryRay.Direction
                 };
 
                 sampleStack.Push(initialSample);
+
+                SampledColor result = new();
 
                 do
                 {
@@ -51,26 +51,18 @@ namespace JRay_2021
                         continue;
                     }
 
-                    closestIntersection.RenderObject.Material.Render(closestIntersection, sampleStack, lastItem);
+                    var sampled = closestIntersection.RenderObject.Material.Render(closestIntersection, sampleStack, lastItem);
 
-                    if (lastItem == initialSample)
-                    {
-                        continue;
-                    }
-
-                    initialSample.SampledColor = new SampledColor
-                    {
-                        R = initialSample.SampledColor.R + lastItem.SampledColor.R * lastItem.Effect,
-                        G = initialSample.SampledColor.G + lastItem.SampledColor.G * lastItem.Effect,
-                        B = initialSample.SampledColor.B + lastItem.SampledColor.B * lastItem.Effect,
-                    };
+                    result.R += sampled.R * lastItem.Effect;
+                    result.G += sampled.G * lastItem.Effect;
+                    result.B += sampled.B * lastItem.Effect;
                 } while (sampleStack.Count > 0);
 
                 image.PixelGrid[y, x] = new SampledColor
                 {
-                    R = (image.PixelGrid[y, x]?.R ?? 0) + initialSample.SampledColor.R / (float) _samplesPerPixel,
-                    G = (image.PixelGrid[y, x]?.G ?? 0) + initialSample.SampledColor.G / (float) _samplesPerPixel,
-                    B = (image.PixelGrid[y, x]?.B ?? 0) + initialSample.SampledColor.B / (float) _samplesPerPixel
+                    R = image.PixelGrid[y, x].R + result.R / (float) _samplesPerPixel,
+                    G = image.PixelGrid[y, x].G + result.G / (float) _samplesPerPixel,
+                    B = image.PixelGrid[y, x].B + result.B / (float) _samplesPerPixel
                 };
             }
         }
