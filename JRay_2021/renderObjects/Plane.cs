@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace JRay_2021.renderObjects
 {
-    public class Plane: IRenderObject
+    public class Plane : IRenderObject
     {
         private Vector3 _normal;
 

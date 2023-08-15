@@ -3,7 +3,6 @@ using JRay_2021.materials;
 using JRay_2021.primitives;
 using JRay_2021.renderObjects;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
 using Xunit;
@@ -66,7 +65,7 @@ namespace Raytracer_Tests
             {
                 Center = sphere1.Center,
                 Radius = 50,
-                Material = new FullBright { Color = Color.FromArgb(255, 0, 0) }
+                Material = new FullBright { Color = System.Drawing.Color.FromArgb(255, 0, 0) }
             };
 
             scene.RenderObjects = new List<IRenderObject>()
@@ -77,9 +76,9 @@ namespace Raytracer_Tests
 
             await scene.Render(image);
 
-            foreach (var (x, y, pixel) in image.PixelEnumerator())
+            foreach (var pixel in image.PixelEnumerator())
             {
-                Assert.True(pixel.R - 1.0f < 0.000001);
+                Assert.True(pixel.Color.R - 1.0f < 0.000001);
             }
         }
     }

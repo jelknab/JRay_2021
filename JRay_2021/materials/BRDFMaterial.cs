@@ -13,13 +13,13 @@ namespace JRay_2021.materials
         private readonly int _sampleCount = 16;
         private static readonly Random _random = new();
 
-        public SampledColor Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
+        public Color Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
         {
             var incidentDirection = Vector3.Reflect(intersection.Ray.Direction, intersection.HitNormal);
 
             if (sample.Effect < 0.001)
             {
-                return SampledColor.Black;
+                return Color.Black;
             }
 
             var effect = sample.Effect / _sampleCount;
@@ -30,11 +30,12 @@ namespace JRay_2021.materials
                 {
                     Effect = effect,
                     Origin = intersection.Position,
-                    Direction = CalculateDiffuseReflectionDirection(incidentDirection, intersection.HitNormal)
+                    Direction = CalculateDiffuseReflectionDirection(incidentDirection, intersection.HitNormal),
+                    Depth = sample.Depth + 1,
                 });
             }
 
-            return SampledColor.Black;
+            return Color.Black;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -5,9 +5,16 @@ using System.IO;
 
 namespace JRay_2021
 {
+    public struct Pixel
+    {
+        public required int X { get; set; }
+        public required int Y { get; set; }
+        public required Color Color { get; set; }
+    }
+
     public class Image
     {
-        public SampledColor[,] PixelGrid { get; }
+        public Color[,] PixelGrid { get; }
 
         public float AspectRatio { get; }
 
@@ -19,16 +26,21 @@ namespace JRay_2021
 
         public Image(int width, int height, float exposure)
         {
-            PixelGrid = new SampledColor[height, width];
+            PixelGrid = new Color[height, width];
             AspectRatio = (float)width / height;
             Exposure = exposure;
         }
 
-        public IEnumerable<(int x, int y, SampledColor pixel)> PixelEnumerator()
+        public IEnumerable<Pixel> PixelEnumerator()
         {
             for (var y = 0; y < Height; y++)
                 for (var x = 0; x < Width; x++)
-                    yield return (x, y, PixelGrid[y, x]);
+                    yield return new Pixel
+                    {
+                        Color = PixelGrid[y, x],
+                        X = x,
+                        Y = y
+                    };
         }
 
         public void SaveImage(string destination, SKEncodedImageFormat format)
@@ -38,14 +50,14 @@ namespace JRay_2021
 
             var canvas = surface.Canvas;
 
-            foreach (var (x, y, pixel) in PixelEnumerator())
+            foreach (var pixel in PixelEnumerator())
             {
                 var color = new SKColor(
-                        (byte)(pixel.R * 255),
-                        (byte)(pixel.G * 255),
-                        (byte)(pixel.B * 255)
+                        (byte)(pixel.Color.R * 255),
+                        (byte)(pixel.Color.G * 255),
+                        (byte)(pixel.Color.B * 255)
                     );
-                canvas.DrawPoint(x, y, color);
+                canvas.DrawPoint(pixel.X, pixel.Y, color);
             }
 
             using var image = surface.Snapshot();

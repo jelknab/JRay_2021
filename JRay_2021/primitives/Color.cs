@@ -1,12 +1,10 @@
-using System.Drawing;
-
 namespace JRay_2021.primitives
 {
-    public struct SampledColor
+    public struct Color
     {
-        public static readonly SampledColor Black = new();
+        public static readonly Color Black = new();
 
-        public SampledColor(Color color)
+        public Color(System.Drawing.Color color)
         {
             R = color.R / 255.0f;
             G = color.G / 255.0f;

@@ -5,10 +5,10 @@ namespace JRay_2021.materials
 {
     public class HitNormalMaterial : IMaterial
     {
-        public SampledColor Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
+        public Color Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
         {
             var n = intersection.HitNormal;
-            return new SampledColor
+            return new Color
             {
                 R = (1 + n.X) / 2,
                 G = (1 + n.Y) / 2,

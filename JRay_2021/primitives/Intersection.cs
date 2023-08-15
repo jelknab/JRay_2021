@@ -1,5 +1,4 @@
 using JRay_2021.renderObjects;
-using System;
 using System.Numerics;
 
 namespace JRay_2021.primitives

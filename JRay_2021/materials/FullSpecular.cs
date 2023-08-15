@@ -8,7 +8,7 @@ namespace JRay_2021.materials
     {
         public required Scene Scene { get; set; }
 
-        public SampledColor Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
+        public Color Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
         {
             var reflect = Vector3.Reflect(intersection.Ray.Direction, intersection.HitNormal);
 
@@ -16,10 +16,11 @@ namespace JRay_2021.materials
             {
                 Effect = sample.Effect,
                 Origin = intersection.Position,
-                Direction = reflect
+                Direction = reflect,
+                Depth = sample.Depth + 1,
             });
 
-            return SampledColor.Black;
+            return Color.Black;
         }
     }
 }

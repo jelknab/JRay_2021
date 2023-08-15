@@ -1,9 +1,5 @@
 ﻿using JRay_2021.primitives;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JRay_2021.materials
 {
@@ -13,14 +9,14 @@ namespace JRay_2021.materials
         public required float Effect { get; set; }
     }
 
-    public class MixedMaterial: IMaterial
+    public class MixedMaterial : IMaterial
     {
         public required List<MixedMaterialMaterial> Materials { get; set; }
 
 
-        public SampledColor Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
+        public Color Render(Intersection intersection, Stack<Sample> sampleStack, Sample sample)
         {
-            var result = new SampledColor();
+            var result = new Color();
 
             foreach (var material in Materials)
             {
@@ -28,7 +24,8 @@ namespace JRay_2021.materials
                 {
                     Effect = sample.Effect * material.Effect,
                     Direction = sample.Direction,
-                    Origin = sample.Origin
+                    Origin = sample.Origin,
+                    Depth = sample.Depth + 1,
                 };
 
                 var sampled = material.Material.Render(intersection, sampleStack, childSample);

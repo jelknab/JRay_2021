@@ -12,41 +12,54 @@ namespace JRay_2021
 
         public List<IRenderObject> RenderObjects { get; set; } = new List<IRenderObject>();
 
-        public int _samplesPerPixel = 4;
+        private static readonly int _maxDepth = 4;
+
+        private static readonly int _samplesPerPixel = 4;
 
         public async Task Render(Image image)
         {
-            foreach (var block in image.PixelEnumerator().Batch(128))
+            var blockTasks = image
+                .PixelEnumerator()
+                .Batch(128)
+                .Select(pixelBlock => Task.Run(() => RenderPixelBlock(image, pixelBlock)));
+
+            await Task.WhenAll(blockTasks);
+        }
+
+        public void RenderPixelBlock(Image image, IEnumerable<Pixel> pixels)
+        {
+            var sampleStack = new Stack<Sample>(512);
+
+            foreach (var pixel in pixels)
             {
-                var tasks = block.Select(pixel => Task.Run(() => RenderPixel(image, pixel.x, pixel.y)));
-                await Task.WhenAll(tasks);
+                RenderPixel(image, pixel.X, pixel.Y, sampleStack);
             }
         }
 
-        public void RenderPixel(Image image, int x, int y)
+        public void RenderPixel(Image image, int x, int y, Stack<Sample> sampleStack)
         {
             for (int sample = 0; sample < _samplesPerPixel; sample++)
             {
                 var primaryRay = Camera.RasterToPrimaryRay(image, x, y, sample, _samplesPerPixel);
-                var sampleStack = new Stack<Sample>();
 
                 var initialSample = new Sample
                 {
                     Effect = 1f,
                     Origin = primaryRay.Origin,
-                    Direction = primaryRay.Direction
+                    Direction = primaryRay.Direction,
+                    Depth = 0
                 };
 
                 sampleStack.Push(initialSample);
 
-                SampledColor result = new();
+                Color result = new();
 
                 do
                 {
                     var lastItem = sampleStack.Pop();
                     var closestIntersection = FindClosestIntersection(lastItem);
 
-                    if (closestIntersection is null)
+                    if (closestIntersection is null || lastItem.Depth > _maxDepth)
                     {
                         continue;
                     }
@@ -58,11 +71,11 @@ namespace JRay_2021
                     result.B += sampled.B * lastItem.Effect;
                 } while (sampleStack.Count > 0);
 
-                image.PixelGrid[y, x] = new SampledColor
+                image.PixelGrid[y, x] = new Color
                 {
-                    R = image.PixelGrid[y, x].R + result.R / (float) _samplesPerPixel,
-                    G = image.PixelGrid[y, x].G + result.G / (float) _samplesPerPixel,
-                    B = image.PixelGrid[y, x].B + result.B / (float) _samplesPerPixel
+                    R = image.PixelGrid[y, x].R + result.R / _samplesPerPixel,
+                    G = image.PixelGrid[y, x].G + result.G / _samplesPerPixel,
+                    B = image.PixelGrid[y, x].B + result.B / _samplesPerPixel
                 };
             }
         }
@@ -76,10 +89,11 @@ namespace JRay_2021
             {
                 var intersectT = renderObject.Intersect(ray);
 
-                if (intersectT == 0 || !(intersectT < maxDistance)) continue;
-
-                maxDistance = intersectT;
-                closestObject = renderObject;
+                if (intersectT > 0 && intersectT < maxDistance)
+                {
+                    maxDistance = intersectT;
+                    closestObject = renderObject;
+                }
             }
 
             if (closestObject is null)
